@@ -106,6 +106,7 @@ async def async_setup_entry(
 class HydroTarifSensor(CoordinatorEntity, SensorEntity):
     """A SISPEA sensor for one commune."""
 
+    _attr_has_entity_name = True
     entity_description: HydroTarifSensorDescription
 
     def __init__(self, coordinator, entry: ConfigEntry, description: HydroTarifSensorDescription) -> None:
@@ -115,7 +116,7 @@ class HydroTarifSensor(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_{description.key}"
         self._attr_device_info = {
             "identifiers": {(DOMAIN, entry.entry_id)},
-            "name": entry.data.get(CONF_LOCATION_LABEL, entry.data[CONF_COMMUNE]),
+            "name": f"HydroTarif - {entry.data.get(CONF_LOCATION_LABEL, entry.data[CONF_COMMUNE])}",
             "manufacturer": "SISPEA / OFB",
             "model": "Tarifs communaux",
         }
