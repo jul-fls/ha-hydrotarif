@@ -1,7 +1,7 @@
 {
   "domain": "hydrotarif",
   "name": "HydroTarif",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "config_flow": true,
   "documentation": "https://services.eaufrance.fr/pro/telechargement",
   "codeowners": [],

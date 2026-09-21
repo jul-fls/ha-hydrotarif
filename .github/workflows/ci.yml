@@ -1,0 +1,66 @@
+name: CI/CD
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests and version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Check manifest version
+        run: python scripts/check_version.py
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+  hassfest:
+    name: Hassfest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    name: HACS validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: hacs/action@main
+        with:
+          category: integration
+
+  release:
+    name: Publish release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: [tests, hassfest, hacs]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Verify release tag matches manifest
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python scripts/check_version.py
+      - name: Package integration
+        run: |
+          mkdir -p dist
+          zip -r dist/ha-hydrotarif.zip custom_components/hydrotarif -x '*/__pycache__/*'
+      - name: Publish GitHub release
+        run: gh release create "$GITHUB_REF_NAME" dist/ha-hydrotarif.zip --verify-tag --generate-notes

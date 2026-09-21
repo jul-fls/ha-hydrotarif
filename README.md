@@ -33,3 +33,9 @@ L'intégration vérifie SISPEA une fois par jour. Elle consulte au maximum six m
 La fiche communale SISPEA peut être incomplète ou en retard. Un même territoire peut présenter plusieurs zones ou services tarifaires ; le tarif communal n'est alors qu'indicatif pour l'adresse précise. En absence de service d'assainissement collectif, le capteur d'assainissement et le total restent indisponibles : le coût de l'assainissement individuel n'est pas un tarif par m³. Une refonte HTML de SISPEA peut nécessiter une mise à jour de l'extracteur.
 
 Le projet n'est pas affilié à l'OFB, à SISPEA ou à Home Assistant.
+
+## Développement et publication
+
+Chaque modification incrémente la version dans `custom_components/hydrotarif/manifest.json`. La CI lance les tests, Hassfest et la validation HACS à chaque push et pull request.
+
+Pour publier, créer puis pousser un tag correspondant exactement au manifest, par exemple `v0.1.3`. Après validation des trois contrôles, le workflow crée une release GitHub avec un ZIP de `custom_components/hydrotarif`. Un tag dont la version diffère du manifest est refusé.
