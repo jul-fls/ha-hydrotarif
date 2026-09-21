@@ -38,4 +38,4 @@ Le projet n'est pas affilié à l'OFB, à SISPEA ou à Home Assistant.
 
 Chaque modification incrémente la version dans `custom_components/hydrotarif/manifest.json`. La CI lance les tests, Hassfest et la validation HACS à chaque push et pull request.
 
-Pour publier, créer puis pousser un tag correspondant exactement au manifest, par exemple `v0.1.3`. Après validation des trois contrôles, le workflow crée une release GitHub avec un ZIP de `custom_components/hydrotarif`. Un tag dont la version diffère du manifest est refusé.
+Pour publier, créer puis pousser un tag correspondant exactement au manifest, au format `vX.Y.Z`. Après validation des trois contrôles, le workflow crée une release GitHub avec un ZIP de `custom_components/hydrotarif`. Un tag dont la version diffère du manifest est refusé.
