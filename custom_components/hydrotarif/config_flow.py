@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import aiohttp
 import voluptuous as vol
 
@@ -11,6 +13,7 @@ from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
+    SelectOptionDict,
 )
 
 from .const import (
@@ -26,13 +29,16 @@ from .location import (
     AmbiguousLocation,
     InvalidLocation,
     Location,
+    PostalChoice,
     from_address,
     from_coordinates,
     from_insee,
-    from_postal_commune,
+    from_postal_choice,
+    search_postal_prefix,
 )
 
 CONF_POSTAL_CODE = "postal_code"
+CONF_POSTAL_CHOICE = "postal_choice"
 CONF_ADDRESS = "address"
 
 
@@ -134,18 +140,46 @@ class HydroTarifFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_postal_commune(self, user_input=None):
         errors = {}
         if user_input is not None:
-            result = await self._resolve(
-                from_postal_commune(
-                    self._session(), user_input[CONF_POSTAL_CODE], user_input[CONF_COMMUNE]
-                )
-            )
-            if isinstance(result, Location):
-                return await self._finish(result)
-            errors["base"] = result
+            prefix = user_input[CONF_POSTAL_CODE].strip()
+            if not re.fullmatch(r"\d{2,5}", prefix):
+                errors[CONF_POSTAL_CODE] = "invalid_postal_prefix"
+            else:
+                result = await self._resolve(search_postal_prefix(self._session(), prefix))
+                if isinstance(result, list):
+                    self._postal_choices: dict[str, PostalChoice] = {
+                        choice.value: choice for choice in result
+                    }
+                    return await self.async_step_postal_select()
+                errors["base"] = result
         return self.async_show_form(
             step_id="postal_commune",
+            data_schema=vol.Schema({vol.Required(CONF_POSTAL_CODE): str}),
+            errors=errors,
+        )
+
+    async def async_step_postal_select(self, user_input=None):
+        choices = getattr(self, "_postal_choices", None)
+        if not choices:
+            return await self.async_step_postal_commune()
+        errors = {}
+        if user_input is not None:
+            selected = choices.get(user_input.get(CONF_POSTAL_CHOICE))
+            if selected is None:
+                errors["base"] = "invalid_location"
+            else:
+                result = await self._resolve(from_postal_choice(self._session(), selected))
+                if isinstance(result, Location):
+                    return await self._finish(result)
+                errors["base"] = result
+        options = [SelectOptionDict(value=choice.value, label=choice.label) for choice in choices.values()]
+        return self.async_show_form(
+            step_id="postal_select",
             data_schema=vol.Schema(
-                {vol.Required(CONF_POSTAL_CODE): str, vol.Required(CONF_COMMUNE): str}
+                {
+                    vol.Required(CONF_POSTAL_CHOICE): SelectSelector(
+                        SelectSelectorConfig(options=options, mode=SelectSelectorMode.DROPDOWN)
+                    )
+                }
             ),
             errors=errors,
         )

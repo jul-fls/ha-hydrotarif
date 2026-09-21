@@ -106,14 +106,35 @@ class LocationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(found.unique_id, "home")
         self.assertEqual(session.calls[1][0], "https://geo.api.gouv.fr/communes/75056")
 
-    async def test_postal_commune_matches_name_and_keeps_distinct_entry(self):
+    async def test_postal_prefix_lists_all_matching_postcodes(self):
         session = FakeSession(
-            [{"code": "33109", "nom": "Castres-Gironde"}],
+            [
+                {"code": "33109", "nom": "Castres-Gironde", "codesPostaux": ["33640"]},
+                {"code": "33063", "nom": "Bordeaux", "codesPostaux": ["33000", "33100"]},
+                {"code": "75056", "nom": "Paris", "codesPostaux": ["75001"]},
+            ]
+        )
+        choices = await location.search_postal_prefix(session, "33")
+        self.assertEqual(
+            [choice.value for choice in choices],
+            ["33000:33063", "33100:33063", "33640:33109"],
+        )
+        self.assertEqual(session.calls[0][1], {"fields": "nom,code,codesPostaux"})
+
+    async def test_postal_selection_keeps_distinct_entry(self):
+        session = FakeSession(
             {"code": "33109", "nom": "Castres-Gironde"},
         )
-        found = await location.from_postal_commune(session, "33640", "castres gironde")
+        selected = location.PostalChoice("33640", "33109", "Castres-Gironde")
+        found = await location.from_postal_choice(session, selected)
         self.assertEqual(found.code, "33109")
         self.assertEqual(found.unique_id, "postal:33640:33109")
+
+    async def test_postal_prefix_requires_at_least_two_digits(self):
+        session = FakeSession()
+        with self.assertRaises(location.InvalidLocation):
+            await location.search_postal_prefix(session, "3")
+        self.assertFalse(session.calls)
 
     async def test_full_address_uses_ign_and_keeps_address_label(self):
         session = FakeSession(

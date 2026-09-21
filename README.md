@@ -10,7 +10,7 @@ Le projet est prévu pour le dépôt GitHub `ha-hydrotarif`. Après publication,
 
 ## Configuration
 
-Par défaut, le formulaire utilise la position définie dans Home Assistant. Il accepte aussi des coordonnées GPS, un couple code postal + commune, une adresse complète ou un code INSEE. Les coordonnées et les codes postaux sont résolus avec [l'API Découpage administratif](https://geo.api.gouv.fr/decoupage-administratif/communes) ; les adresses complètes sont recherchées avec le [géocodeur IGN](https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/geocodage/). Les résultats imprécis ou ambigus sont refusés.
+Par défaut, le formulaire utilise la position définie dans Home Assistant. Il accepte aussi des coordonnées GPS, un préfixe de code postal, une adresse complète ou un code INSEE. Avec le mode postal, saisissez 2 à 5 chiffres, validez, puis choisissez la commune dans la liste filtrée des codes postaux correspondants. Le formulaire natif Home Assistant ne rafraîchit pas cette liste pendant la frappe ; elle apparaît à l'étape suivante. Les coordonnées et les codes postaux sont résolus avec [l'API Découpage administratif](https://geo.api.gouv.fr/decoupage-administratif/communes) ; les adresses complètes sont recherchées avec le [géocodeur IGN](https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/geocodage/). Les résultats imprécis ou ambigus sont refusés.
 
 Chaque emplacement ajouté crée une entrée et des entités distinctes, y compris lorsque plusieurs emplacements appartiennent à la même commune. La localisation permet de sélectionner la commune SISPEA ; elle ne garantit pas un tarif spécifique à une rue ou à une zone infra-communale.
 

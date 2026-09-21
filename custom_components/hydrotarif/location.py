@@ -30,6 +30,21 @@ class Location:
     longitude: float | None = None
 
 
+@dataclass(frozen=True)
+class PostalChoice:
+    postcode: str
+    code: str
+    commune: str
+
+    @property
+    def value(self) -> str:
+        return f"{self.postcode}:{self.code}"
+
+    @property
+    def label(self) -> str:
+        return f"{self.postcode} - {self.commune} ({self.code})"
+
+
 def _normalize(value: str) -> str:
     ascii_value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
     return " ".join(re.findall(r"[a-z0-9]+", ascii_value.casefold()))
@@ -85,33 +100,40 @@ async def from_coordinates(
     return Location(code, name, label, source, unique_id, latitude, longitude)
 
 
-async def from_postal_commune(
-    session: aiohttp.ClientSession, postal_code: str, commune: str
-) -> Location:
-    postal_code = postal_code.strip()
-    if not re.fullmatch(r"\d{5}", postal_code) or not commune.strip():
+async def search_postal_prefix(
+    session: aiohttp.ClientSession, prefix: str
+) -> list[PostalChoice]:
+    """List every commune with a postal code beginning with the given digits."""
+    prefix = prefix.strip()
+    if not re.fullmatch(r"\d{2,5}", prefix):
         raise InvalidLocation
     results = await _get_json(
-        session, GEO_URL, {"codePostal": postal_code, "fields": "nom,code,codesPostaux"}
+        session, GEO_URL, {"fields": "nom,code,codesPostaux"}
     )
     if not isinstance(results, list):
         raise InvalidLocation
-    wanted = _normalize(commune)
-    matches = []
+    choices: dict[str, PostalChoice] = {}
     for candidate in results:
-        name = _normalize(candidate.get("nom", ""))
         code = candidate.get("code", "")
-        if name == wanted or (
-            wanted in ("paris", "lyon", "marseille") and name.startswith(wanted + " ")
-        ):
-            matches.append(code)
-    canonical = {_commune_code(code) for code in matches}
-    if not canonical:
+        name = candidate.get("nom", "")
+        for postcode in candidate.get("codesPostaux") or []:
+            if isinstance(postcode, str) and postcode.startswith(prefix) and code and name:
+                choice = PostalChoice(postcode, code, name)
+                choices[choice.value] = choice
+    if not choices:
         raise InvalidLocation
-    if len(canonical) > 1:
-        raise AmbiguousLocation
-    code, name = await _canonical_commune(session, canonical.pop())
-    return Location(code, name, f"{name} ({postal_code})", "postal_commune", f"postal:{postal_code}:{code}")
+    return sorted(choices.values(), key=lambda choice: (choice.postcode, _normalize(choice.commune), choice.code))
+
+
+async def from_postal_choice(session: aiohttp.ClientSession, choice: PostalChoice) -> Location:
+    code, name = await _canonical_commune(session, choice.code)
+    return Location(
+        code,
+        name,
+        f"{name} ({choice.postcode})",
+        "postal_commune",
+        f"postal:{choice.postcode}:{code}",
+    )
 
 
 async def from_address(session: aiohttp.ClientSession, address: str) -> Location:

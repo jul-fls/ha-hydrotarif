@@ -7,12 +7,21 @@
         "data": {"location_source": "Méthode de localisation"}
       },
       "gps": {"title": "Coordonnées GPS", "data": {"latitude": "Latitude", "longitude": "Longitude"}},
-      "postal_commune": {"title": "Code postal et commune", "data": {"postal_code": "Code postal", "commune": "Commune"}},
+      "postal_commune": {
+        "title": "Recherche par code postal",
+        "description": "Saisissez les 2 à 5 premiers chiffres d'un code postal, puis choisissez la commune sur l'écran suivant.",
+        "data": {"postal_code": "Début du code postal"}
+      },
+      "postal_select": {
+        "title": "Choisir une commune",
+        "data": {"postal_choice": "Code postal et commune"}
+      },
       "address": {"title": "Adresse complète", "data": {"address": "Adresse, code postal et commune"}},
       "insee": {"title": "Code INSEE", "data": {"insee_code": "Code INSEE de la commune"}}
     },
     "error": {
       "invalid_location": "Aucune commune française n'a été trouvée avec assez de certitude.",
+      "invalid_postal_prefix": "Saisissez 2 à 5 chiffres du code postal.",
       "ambiguous_location": "Plusieurs communes correspondent. Précisez l'adresse.",
       "cannot_connect": "Impossible de joindre le service géographique."
     },

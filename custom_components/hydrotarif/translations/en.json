@@ -7,12 +7,21 @@
         "data": {"location_source": "Location method"}
       },
       "gps": {"title": "GPS coordinates", "data": {"latitude": "Latitude", "longitude": "Longitude"}},
-      "postal_commune": {"title": "Postal code and commune", "data": {"postal_code": "Postal code", "commune": "Commune"}},
+      "postal_commune": {
+        "title": "Search by postal code",
+        "description": "Enter the first 2 to 5 digits of a postal code, then choose a commune on the next screen.",
+        "data": {"postal_code": "Postal code prefix"}
+      },
+      "postal_select": {
+        "title": "Choose a commune",
+        "data": {"postal_choice": "Postal code and commune"}
+      },
       "address": {"title": "Full address", "data": {"address": "Address, postal code and commune"}},
       "insee": {"title": "INSEE code", "data": {"insee_code": "Commune INSEE code"}}
     },
     "error": {
       "invalid_location": "No reliable French commune match was found.",
+      "invalid_postal_prefix": "Enter 2 to 5 postal code digits.",
       "ambiguous_location": "Several communes match. Enter a more precise address.",
       "cannot_connect": "Cannot reach the French geographic service."
     },
