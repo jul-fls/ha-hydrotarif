@@ -1,0 +1,51 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HydroTarif",
+        "description": "Choisissez un emplacement. La position de Home Assistant est sélectionnée par défaut. Les tarifs sont indicatifs à l'échelle communale.",
+        "data": {"location_source": "Méthode de localisation"}
+      },
+      "gps": {"title": "Coordonnées GPS", "data": {"latitude": "Latitude", "longitude": "Longitude"}},
+      "postal_commune": {"title": "Code postal et commune", "data": {"postal_code": "Code postal", "commune": "Commune"}},
+      "address": {"title": "Adresse complète", "data": {"address": "Adresse, code postal et commune"}},
+      "insee": {"title": "Code INSEE", "data": {"insee_code": "Code INSEE de la commune"}}
+    },
+    "error": {
+      "invalid_location": "Aucune commune française n'a été trouvée avec assez de certitude.",
+      "ambiguous_location": "Plusieurs communes correspondent. Précisez l'adresse.",
+      "cannot_connect": "Impossible de joindre le service géographique."
+    },
+    "abort": {"already_configured": "Cet emplacement est déjà configuré."}
+  },
+  "selector": {
+    "location_source": {
+      "options": {
+        "home": "Position de Home Assistant",
+        "gps": "Coordonnées GPS",
+        "postal_commune": "Code postal et commune",
+        "address": "Adresse complète",
+        "insee": "Code INSEE"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "water_price": {"name": "Prix de l'eau potable"},
+      "sanitation_price": {"name": "Prix de l'assainissement collectif"},
+      "total_price": {"name": "Prix total de l'eau"},
+      "water_tariff_date": {"name": "Date du tarif de l'eau potable"},
+      "sanitation_tariff_date": {"name": "Date du tarif de l'assainissement"},
+      "last_checked": {"name": "Dernière vérification réussie"},
+      "source_status": {
+        "name": "État des données",
+        "state": {
+          "complete": "Complètes",
+          "partial": "Partielles",
+          "no_collective_service": "Sans assainissement collectif",
+          "missing": "Aucun tarif disponible"
+        }
+      }
+    }
+  }
+}

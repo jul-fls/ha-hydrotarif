@@ -1,0 +1,51 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HydroTarif",
+        "description": "Choose a location. The Home Assistant location is selected by default. Prices are commune-level estimates.",
+        "data": {"location_source": "Location method"}
+      },
+      "gps": {"title": "GPS coordinates", "data": {"latitude": "Latitude", "longitude": "Longitude"}},
+      "postal_commune": {"title": "Postal code and commune", "data": {"postal_code": "Postal code", "commune": "Commune"}},
+      "address": {"title": "Full address", "data": {"address": "Address, postal code and commune"}},
+      "insee": {"title": "INSEE code", "data": {"insee_code": "Commune INSEE code"}}
+    },
+    "error": {
+      "invalid_location": "No reliable French commune match was found.",
+      "ambiguous_location": "Several communes match. Enter a more precise address.",
+      "cannot_connect": "Cannot reach the French geographic service."
+    },
+    "abort": {"already_configured": "This location is already configured."}
+  },
+  "selector": {
+    "location_source": {
+      "options": {
+        "home": "Home Assistant location",
+        "gps": "GPS coordinates",
+        "postal_commune": "Postal code and commune",
+        "address": "Full address",
+        "insee": "INSEE code"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "water_price": {"name": "Drinking water price"},
+      "sanitation_price": {"name": "Collective sanitation price"},
+      "total_price": {"name": "Combined water price"},
+      "water_tariff_date": {"name": "Drinking water tariff date"},
+      "sanitation_tariff_date": {"name": "Sanitation tariff date"},
+      "last_checked": {"name": "Last successful check"},
+      "source_status": {
+        "name": "Data status",
+        "state": {
+          "complete": "Complete",
+          "partial": "Partial",
+          "no_collective_service": "No collective sanitation",
+          "missing": "No price available"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+"""Constants for HydroTarif."""
+
+DOMAIN = "hydrotarif"
+CONF_INSEE = "insee_code"
+CONF_COMMUNE = "commune"
+CONF_LOCATION_LABEL = "location_label"
+CONF_LOCATION_SOURCE = "location_source"
+CONF_LATITUDE = "latitude"
+CONF_LONGITUDE = "longitude"
+SISPEA_URL = "https://www.services.eaufrance.fr/commune/{code}/{year}"
+GEO_URL = "https://geo.api.gouv.fr/communes"
+ADDRESS_URL = "https://data.geopf.fr/geocodage/search"

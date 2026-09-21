@@ -1,0 +1,11 @@
+{
+  "domain": "hydrotarif",
+  "name": "HydroTarif",
+  "version": "0.1.0",
+  "config_flow": true,
+  "documentation": "https://services.eaufrance.fr/pro/telechargement",
+  "codeowners": [],
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "requirements": []
+}
